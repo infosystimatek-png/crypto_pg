@@ -17,11 +17,11 @@
             </div>
             <div>
                 <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" type="password" name="password" required autocomplete="new-password" />
+                <x-password-input id="password" name="password" required autocomplete="new-password" />
             </div>
             <div>
                 <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
+                <x-password-input id="password_confirmation" name="password_confirmation" required autocomplete="new-password" />
             </div>
             <x-button class="w-full">{{ __('Reset Password') }}</x-button>
         </form>
