@@ -29,6 +29,9 @@ class AdminDashboardController extends Controller
             'payments' => PaymentRequest::query()->count(),
             'credited' => PaymentRequest::query()->where('status', 'CREDITED')->count(),
             'exceptions' => ReconciliationRun::query()->latest('id')->first(),
+            'recent' => PaymentRequest::query()->with(['merchant', 'asset', 'network'])->latest('id')->limit(8)->get(),
+            'openPayments' => PaymentRequest::query()->whereIn('status', ['WAITING_FOR_PAYMENT', 'TRANSACTION_DETECTED', 'CONFIRMING'])->count(),
+            'failedWebhooks' => WebhookDelivery::query()->whereIn('status', ['failed', 'dead_letter'])->count(),
         ]);
     }
 
