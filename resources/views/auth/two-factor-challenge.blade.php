@@ -3,13 +3,15 @@
         <x-slot name="logo">
             <x-authentication-card-logo />
         </x-slot>
+        <x-slot name="title">Two-factor authentication</x-slot>
+        <x-slot name="subtitle">Confirm it is you before opening the console.</x-slot>
 
         <div x-data="{ recovery: false }">
-            <div class="mb-4 text-sm text-gray-600 dark:text-gray-400" x-show="! recovery">
+            <div class="mb-4 text-sm leading-relaxed text-slate-600" x-show="! recovery">
                 {{ __('Please confirm access to your account by entering the authentication code provided by your authenticator application.') }}
             </div>
 
-            <div class="mb-4 text-sm text-gray-600 dark:text-gray-400" x-cloak x-show="recovery">
+            <div class="mb-4 text-sm leading-relaxed text-slate-600" x-cloak x-show="recovery">
                 {{ __('Please confirm access to your account by entering one of your emergency recovery codes.') }}
             </div>
 
@@ -29,7 +31,7 @@
                 </div>
 
                 <div class="flex items-center justify-end mt-4">
-                    <button type="button" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 underline cursor-pointer"
+                    <button type="button" class="cursor-pointer text-sm font-medium text-indigo-600 hover:text-indigo-500"
                                     x-show="! recovery"
                                     x-on:click="
                                         recovery = true;
@@ -38,7 +40,7 @@
                         {{ __('Use a recovery code') }}
                     </button>
 
-                    <button type="button" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 underline cursor-pointer"
+                    <button type="button" class="cursor-pointer text-sm font-medium text-indigo-600 hover:text-indigo-500"
                                     x-cloak
                                     x-show="recovery"
                                     x-on:click="

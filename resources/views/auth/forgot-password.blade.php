@@ -3,32 +3,25 @@
         <x-slot name="logo">
             <x-authentication-card-logo />
         </x-slot>
-
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-        </div>
+        <x-slot name="title">Reset your password</x-slot>
+        <x-slot name="subtitle">Enter your email and we will send a reset link. Secrets are never stored in logs.</x-slot>
 
         @session('status')
-            <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-                {{ $value }}
-            </div>
+            <div class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ $value }}</div>
         @endsession
 
         <x-validation-errors class="mb-4" />
 
-        <form method="POST" action="{{ route('password.email') }}">
+        <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
             @csrf
-
-            <div class="block">
+            <div>
                 <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                <x-input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Email Password Reset Link') }}
-                </x-button>
-            </div>
+            <x-button class="w-full">{{ __('Email Password Reset Link') }}</x-button>
+            <p class="text-center text-sm text-slate-500">
+                <a class="font-medium text-indigo-600" href="{{ route('login') }}">Back to log in</a>
+            </p>
         </form>
     </x-authentication-card>
 </x-guest-layout>

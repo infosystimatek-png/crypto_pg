@@ -6,7 +6,9 @@ use Laravel\Jetstream\Jetstream;
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 
-    $response->assertStatus(200);
+    $response->assertStatus(200)
+        ->assertSee('Create your Vaultgate account')
+        ->assertSee('Vaultgate', false);
 })->skip(function () {
     return ! Features::enabled(Features::registration());
 }, 'Registration support is not enabled.');
