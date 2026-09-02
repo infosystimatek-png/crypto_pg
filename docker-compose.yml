@@ -1,0 +1,88 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    environment:
+      APP_ENV: local
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: gateway
+      DB_USERNAME: gateway
+      DB_PASSWORD: gateway
+      REDIS_HOST: redis
+      QUEUE_CONNECTION: redis
+      CACHE_STORE: redis
+      SESSION_DRIVER: redis
+      GATEWAY_BLOCKCHAIN_DRIVER: mock
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "8000:8000"
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_DATABASE: gateway
+      DB_USERNAME: gateway
+      DB_PASSWORD: gateway
+      REDIS_HOST: redis
+      QUEUE_CONNECTION: redis
+      GATEWAY_BLOCKCHAIN_DRIVER: mock
+    depends_on:
+      - mysql
+      - redis
+    command: php artisan queue:work --sleep=1 --tries=3 --timeout=120
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_DATABASE: gateway
+      DB_USERNAME: gateway
+      DB_PASSWORD: gateway
+      REDIS_HOST: redis
+      QUEUE_CONNECTION: redis
+    depends_on:
+      - mysql
+      - redis
+    command: php artisan schedule:work
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: gateway
+      MYSQL_USER: gateway
+      MYSQL_PASSWORD: gateway
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql-data:
