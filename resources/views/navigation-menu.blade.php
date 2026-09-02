@@ -137,6 +137,26 @@
             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link
+                href="{{ route(auth()->user()->isAdmin() ? 'admin.payments' : 'merchant.payments') }}"
+                :active="request()->routeIs('merchant.payments*') || request()->routeIs('admin.payments') || request()->routeIs('admin.payments.show')"
+            >
+                {{ __('Payments') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link
+                href="{{ route(auth()->user()->isAdmin() ? 'admin.ledger' : 'merchant.ledger') }}"
+                :active="request()->routeIs('merchant.ledger') || request()->routeIs('admin.ledger')"
+            >
+                {{ __('Ledger') }}
+            </x-responsive-nav-link>
+            @if (auth()->user()->isAdmin())
+                <x-responsive-nav-link
+                    href="{{ route('admin.dashboard') }}"
+                    :active="request()->routeIs('admin.*') && ! request()->routeIs('admin.payments') && ! request()->routeIs('admin.payments.show') && ! request()->routeIs('admin.ledger')"
+                >
+                    {{ __('Admin') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

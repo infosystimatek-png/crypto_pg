@@ -54,3 +54,12 @@ test('admin without a merchant is redirected from merchant payment pages', funct
     $this->actingAs($admin)->get('/payments')->assertRedirect(route('admin.payments'));
     $this->actingAs($admin)->get('/ledger')->assertRedirect(route('admin.ledger'));
 });
+
+test('admin ledger page highlights ledger instead of admin in the primary nav', function () {
+    $admin = User::factory()->admin()->create();
+
+    $html = $this->actingAs($admin)->get('/admin/ledger')->assertOk()->getContent();
+
+    expect($html)->toContain('border-indigo-400');
+    expect(substr_count($html, 'border-b-2 border-indigo-400'))->toBeGreaterThan(0);
+});
