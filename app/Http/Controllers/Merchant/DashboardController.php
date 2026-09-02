@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Merchant;
 use App\Models\MerchantBalanceProjection;
 use App\Models\PaymentRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -35,9 +36,12 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function payments(Request $request): View
+    public function payments(Request $request): View|RedirectResponse
     {
-        $merchant = $this->merchant($request);
+        $merchant = $this->requireMerchant($request);
+        if ($merchant instanceof RedirectResponse) {
+            return $merchant;
+        }
 
         return view('merchant.payments', [
             'merchant' => $merchant,
@@ -49,9 +53,13 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function showPayment(Request $request, string $payment): View
+    public function showPayment(Request $request, string $payment): View|RedirectResponse
     {
-        $merchant = $this->merchant($request);
+        $merchant = $this->requireMerchant($request);
+        if ($merchant instanceof RedirectResponse) {
+            return $merchant;
+        }
+
         $model = PaymentRequest::query()
             ->with(['asset', 'network', 'paymentAddress', 'blockchainTransaction'])
             ->where('merchant_id', $merchant->id)
@@ -61,15 +69,34 @@ class DashboardController extends Controller
         return view('merchant.payment-show', ['payment' => $model, 'merchant' => $merchant]);
     }
 
-    public function ledger(Request $request): View
+    public function ledger(Request $request): View|RedirectResponse
     {
-        $merchant = $this->merchant($request);
+        $merchant = $this->requireMerchant($request);
+        if ($merchant instanceof RedirectResponse) {
+            return $merchant;
+        }
 
         return view('merchant.ledger', [
             'merchant' => $merchant,
             'entries' => $merchant->ledgerAccounts()->with(['asset'])->get(),
             'balances' => MerchantBalanceProjection::query()->with('asset')->where('merchant_id', $merchant->id)->get(),
         ]);
+    }
+
+    private function requireMerchant(Request $request): Merchant|RedirectResponse
+    {
+        $merchant = $this->merchant($request);
+        if ($merchant instanceof Merchant) {
+            return $merchant;
+        }
+
+        if ($request->user()?->isAdmin()) {
+            $route = $request->routeIs('merchant.ledger') ? 'admin.ledger' : 'admin.payments';
+
+            return redirect()->route($route);
+        }
+
+        abort(403, 'No merchant account is linked to this user.');
     }
 
     private function merchant(Request $request): ?Merchant

@@ -47,3 +47,10 @@ test('admin can access admin panel', function () {
     $admin = User::factory()->admin()->create();
     $this->actingAs($admin)->get('/admin')->assertOk();
 });
+
+test('admin without a merchant is redirected from merchant payment pages', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)->get('/payments')->assertRedirect(route('admin.payments'));
+    $this->actingAs($admin)->get('/ledger')->assertRedirect(route('admin.ledger'));
+});

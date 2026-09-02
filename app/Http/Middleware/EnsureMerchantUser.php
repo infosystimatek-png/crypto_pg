@@ -16,17 +16,17 @@ class EnsureMerchantUser
             abort(403);
         }
 
+        $merchant = $user->primaryMerchant();
+        if ($merchant instanceof Merchant) {
+            $request->attributes->set('merchant', $merchant);
+
+            return $next($request);
+        }
+
         if ($user->isAdmin()) {
             return $next($request);
         }
 
-        $merchant = $user->primaryMerchant();
-        if (! $merchant instanceof Merchant) {
-            abort(403, 'No merchant account is linked to this user.');
-        }
-
-        $request->attributes->set('merchant', $merchant);
-
-        return $next($request);
+        abort(403, 'No merchant account is linked to this user.');
     }
 }
